@@ -1,0 +1,7 @@
+%% I provide following Resources 
+-define(LocalResourceTuples,[{balcony,{balcony,node()}},
+			     {lights,{lights,node()}},
+			     {temp,{temp,node()}}]).
+
+%% I want following resource types
+-define(TargetTypes,[etcd]). 
