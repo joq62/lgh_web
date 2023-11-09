@@ -148,8 +148,12 @@ init([]) ->
     [rd:add_target_resource_type(TargetType)||TargetType<-?TargetTypes],
     rd:trade_resources(),
     timer:sleep(5000),
-      
-    ?LOG_NOTICE("Server started ",[]),
+    LocalTuples=rd_store:get_local_resource_tuples(),
+    TargetTuples=rd_store:get_all_resources(),
+     
+    
+    ?LOG_NOTICE("Server started ",[{local_tuples,LocalTuples},
+				  {target_tuples,TargetTuples}]),
     
  
     {ok, #state{}}.
@@ -176,13 +180,26 @@ handle_call({set_temp,Temp},_From,State) ->
     io:format("set_temp,Temp ~p~n",[{Temp,?MODULE,?LINE}]),
     NewState=State#state{balcony_temp=integer_to_list(Temp)},
     {Reply,NewState}=format_text(NewState),
-
     {reply, Reply,NewState};
+
 %%% Websocket API
 
 handle_call({websocket_init,Pid},_From,State) ->
     io:format("init websocket ~p~n",[{?MODULE,?LINE,Pid}]),
-    {Reply,NewState}=format_text(init,State#state{pid=Pid}),
+    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
+  %  BalconyHeaterStatus=atom_to_list(lib_lgh_web:are_heathers_on()),
+    BalconyHeaterStatus=case lib_lgh_web:are_heathers_on() of
+			    false->
+				"OFF";
+			    true ->
+				"ON"
+			end,
+    
+    
+	    
+    {Reply,NewState}=format_text(init,State#state{balcony_heather_status=BalconyHeaterStatus,
+						  balcony_temp=Temp,
+						  pid=Pid}),
     {reply, Reply,NewState};
 
 
@@ -232,6 +249,7 @@ handle_cast(_Request, State) ->
 	  {noreply, NewState :: term(), Timeout :: timeout()} |
 	  {noreply, NewState :: term(), hibernate} |
 	  {stop, Reason :: normal | term(), NewState :: term()}.
+
 handle_info(_Info, State) ->
     {noreply, State}.
 
@@ -291,10 +309,10 @@ format_text(NewState)->
     Type=text,
     M=io_lib,
     F=format,
-    StatusInglasad=NewState#state.balcony_heather_status,
-    StatusLampsIndoor=NewState#state.balcony_temp,
+    BalconyHeaterStatus=NewState#state.balcony_heather_status,
+    BalconyTemp=NewState#state.balcony_temp,
 
-    A=["~s~s~s", [StatusLampsIndoor,",",StatusInglasad]],
+    A=["~s~s~s", [BalconyTemp,",",BalconyHeaterStatus]],
     {{ok,Type,M,F,A},NewState}.
 
 		  

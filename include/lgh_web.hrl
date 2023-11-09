@@ -1,0 +1,3 @@
+-define(TempSensor,"weather_1").
+-define(HeatherBalcony,"switch_inglasade_heather_balcony").
+-define(HeatherDoor,"switch_inglasade_heather_door").

@@ -12,7 +12,9 @@
    <h2 >Balkongen</h2>
 <button type="button" onclick="heater_balcony_on();">Värme PÅ</button>
 <button type="button" onclick="heater_balcony_off();">Värme AV</button>
+<br>
 <div id="balcony_heather_status"></div>
+<br>
 <div id="balcony_temp"></div>
 
 <h2 >Belysning</h2>
@@ -33,9 +35,9 @@
       console.log(event.data);
       var str=event.data;
       var arr=str.split(",");
-      
-      document.getElementById('balcony_heather_status').innerHTML=arr[0];
-      document.getElementById('balcony_temp').innerHTML=arr[1];
+      document.getElementById('balcony_temp').innerHTML=arr[0];  
+      document.getElementById('balcony_heather_status').innerHTML=arr[1];
+    
   };
 
 // Joqs own golden code
