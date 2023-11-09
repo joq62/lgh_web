@@ -40,17 +40,17 @@ stop(_State) ->
 web_init()->
     Port=?Port,
     % Init correct path complicated very erlang specific
-    FullPAthWebServerBeam=code:where_is_file(?AppBeam),
-    L1=filename:split(FullPAthWebServerBeam),
-    [_,_|L2]=lists:reverse(L1),
-    L3=lists:reverse(L2),
-    case L3 of
-	[]->
-	    true=code:add_patha("priv");
-	L3 ->
-	    L4=lists:append(L3,["priv"]),
-	    true=code:add_patha(filename:join(L4)) 
-    end,
+  %  FullPAthWebServerBeam=code:where_is_file(?AppBeam),
+  %  L1=filename:split(FullPAthWebServerBeam),
+ %   [_,_|L2]=lists:reverse(L1),
+ %   L3=lists:reverse(L2),
+%    case L3 of
+%	[]->
+%	    true=code:add_patha("priv");
+%	L3 ->
+%	    L4=lists:append(L3,["priv"]),
+%	    true=code:add_patha(filename:join(L4)) 
+%    end,
     PathToIndex=code:where_is_file("index.html"),
     io:format("PathToIndex :~p~n",[PathToIndex]),
 
