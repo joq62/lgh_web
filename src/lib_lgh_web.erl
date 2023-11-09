@@ -10,9 +10,14 @@
 
 %% API
 -export([
-		
+	 heathers_are_reachable/0,
+	 are_heathers_on/0,
+	 are_heathers_off/0,
+	 get_temp/0
+	 
 	]).
 
+-include("lgh_web.hrl").
 %%%===================================================================
 %%% API
 %%%===================================================================
@@ -21,7 +26,45 @@
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-
+get_temp()->    
+    rd:call(zigbee_devices,call,[?TempSensor,temp,[]],5000).
+    
+%%--------------------------------------------------------------------
+%% @doc
+%% @spec
+%% @end
+%%--------------------------------------------------------------------
+are_heathers_on()->    
+    HB=rd:call(zigbee_devices,call,[?HeatherBalcony,is_reachable,[]],5000),
+    HD=rd:call(zigbee_devices,call,[?HeatherDoor,is_reachable,[]],5000),
+    case {HB,HD} of
+	{true,true}->
+	    true;
+	_->
+	    false
+    end.
+    
+%%--------------------------------------------------------------------
+%% @doc
+%% @spec
+%% @end
+%%--------------------------------------------------------------------
+are_heathers_off()->    
+    false=:=are_heathers_on(). 
+%%--------------------------------------------------------------------
+%% @doc
+%% @spec
+%% @end
+%%--------------------------------------------------------------------
+heathers_are_reachable()->    
+    HB=rd:call(zigbee_devices,call,[?HeatherBalcony,is_reachable,[]],5000),
+    HD=rd:call(zigbee_devices,call,[?HeatherDoor,is_reachable,[]],5000),
+    case {HB,HD} of
+	{true,true}->
+	    true;
+	_->
+	    false
+    end.
 
 %%--------------------------------------------------------------------
 %% @doc

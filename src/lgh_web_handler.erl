@@ -14,6 +14,7 @@ init(Req, State) ->
 websocket_init(State) ->
     S=self(),    
     {ok,Type,M,F,A}=?SERVER:websocket_init(S),
+    io:format(" ok,Type,M,F,A ~p~n",[{Type,M,F,A,?MODULE,?FUNCTION_NAME,?LINE,State}]),
     {reply, {Type,apply(M,F,A)},State}.
 
 websocket_handle(Msg,State) ->

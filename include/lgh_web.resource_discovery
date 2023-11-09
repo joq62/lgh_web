@@ -4,4 +4,4 @@
 			     {temp,{temp,node()}}]).
 
 %% I want following resource types
--define(TargetTypes,[etcd]). 
+-define(TargetTypes,[zigbee_devices]). 
