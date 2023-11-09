@@ -21,6 +21,44 @@
 %%%===================================================================
 %%% API
 %%%===================================================================
+
+
+%%--------------------------------------------------------------------
+%% @doc
+%% @spec
+%% @end
+%%--------------------------------------------------------------------
+turn_on()->	 
+    HB=rd:call(zigbee_devices,call,[?HeatherBalcony,is_reachable,[]],5000),
+    HD=rd:call(zigbee_devices,call,[?HeatherDoor,is_reachable,[]],5000),
+    Result=case {HB,HD} of
+	       {true,true}->
+		   R_HB=rd:call(zigbee_devices,call,[?HeatherBalcony,turn_on,[]],5000),
+		   R_HD=rd:call(zigbee_devices,call,[?HeatherDoor,turn_on,[]],5000),
+		   {ok,[R_HB,R_HD]};
+	       _->
+		   {error,["Heathers not reachable, turn on electricity ",?MODULE,?LINE]}
+	   end,
+    Result.
+
+%%--------------------------------------------------------------------
+%% @doc
+%% @spec
+%% @end
+%%--------------------------------------------------------------------
+turn_off()->	 
+    HB=rd:call(zigbee_devices,call,[?HeatherBalcony,is_reachable,[]],5000),
+    HD=rd:call(zigbee_devices,call,[?HeatherDoor,is_reachable,[]],5000),
+    Result=case {HB,HD} of
+	       {true,true}->
+		   R_HB=rd:call(zigbee_devices,call,[?HeatherBalcony,turn_off,[]],5000),
+		   R_HD=rd:call(zigbee_devices,call,[?HeatherDoor,turn_off,[]],5000),
+		   {ok,[R_HB,R_HD]};
+	       _->
+		   {error,["Heathers not reachabl,electricity probably turned off ",?MODULE,?LINE]}
+	   end,
+    Result.
+
 %%--------------------------------------------------------------------
 %% @doc
 %% @spec
@@ -35,8 +73,8 @@ get_temp()->
 %% @end
 %%--------------------------------------------------------------------
 are_heathers_on()->    
-    HB=rd:call(zigbee_devices,call,[?HeatherBalcony,is_reachable,[]],5000),
-    HD=rd:call(zigbee_devices,call,[?HeatherDoor,is_reachable,[]],5000),
+    HB=rd:call(zigbee_devices,call,[?HeatherBalcony,is_on,[]],5000),
+    HD=rd:call(zigbee_devices,call,[?HeatherDoor,is_on,[]],5000),
     case {HB,HD} of
 	{true,true}->
 	    true;
@@ -71,14 +109,6 @@ heathers_are_reachable()->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-
-
-%%--------------------------------------------------------------------
-%% @doc
-%% @spec
-%% @end
-%%--------------------------------------------------------------------
-	 
 
    
 

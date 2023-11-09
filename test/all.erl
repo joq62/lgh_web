@@ -31,6 +31,8 @@ start()->
     ok=dependent_apps:start(),
     ok=setup(),
 
+  %  ok=test1(20),
+
     io:format("Test OK !!! ~p~n",[?MODULE]),
     timer:sleep(3000),
    % init:stop(),
@@ -40,12 +42,19 @@ start()->
 %% @spec
 %% @end
 %%--------------------------------------------------------------------
-test1()->
+test1(N)->
     io:format("Start ~p~n",[{?MODULE,?FUNCTION_NAME}]),
-       
+    timer:sleep(3000),
+    case lgh_web:set_temp(N+1) of
+	ok->
+	    NewN=N+1;
+	{error,Reason}->
+	    io:format("error,Reason ~p~n",[{Reason,?MODULE,?LINE}]),
+	    NewN=N
+    end,
+    test1(NewN).
 
 
-    ok.
 %% --------------------------------------------------------------------
 %% Function: available_hosts()
 %% Description: Based on hosts.config file checks which hosts are avaible
