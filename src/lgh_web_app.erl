@@ -7,10 +7,17 @@
  
 -behaviour(application).
 
+-include("lgh_web.hrl").
+% The port is definde. Ensure that IPadress and Port  in index.htlm file
+% is updated "var ws = new WebSocket("ws://IPadress:Port/please_upgrade_to_websocket"); 
+
+%% The web server must be an a specifc and listen to a specific port . So tha application needs to 
+%% be pin pointed to that machine
+
 -export([start/2, stop/1]).
 
 -define(AppBeam,atom_to_list(?MODULE)++".beam").
--define(Port,60201). % Change also Port and Path in index.htlm"
+
 -define(Handler,lgh_web_handler).
 -define(NoRouteHandler,no_matching_route_handler).
 

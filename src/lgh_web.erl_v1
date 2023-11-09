@@ -16,7 +16,6 @@
 
 -include("lgh_web.resource_discovery").
 -include("log.api").
--include("lgh_web.hrl").
 
 %% API
 
@@ -160,7 +159,7 @@ init([]) ->
     
  
     {ok, #state{in_session=false,
-		session_time_left=0}}.
+		session_timer}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -214,24 +213,39 @@ handle_call({websocket_init,Pid},_From,State) ->
 
 handle_call({websocket_handle,{text, <<"heater_balcony_on">>}},_From,State) ->
     io:format("BUTTON : heater_balcony_on  ~p~n",[{?MODULE,?LINE}]),
-    io:format("Send a messag to balcony_pid to start session to control heaters  ~p~n",[{?MODULE,?LINE}]),
-    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
-    NewState=State#state{
-	       balcony_temp=Temp,
-	       balcony_heather_status="ON",
-	       session_time_left=?MaxSessionTime},
-    {Reply,NewState}=format_text(NewState),
+    case lib_lgh_web:turn_on() of
+	{ok,Result}->
+	    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
+	    NewState=State#state{
+		       balcony_temp=Temp,
+		       balcony_heather_status="ON",
+		       session_time_left=?MaxSessionTime},
+	    {Reply,NewState}=format_text(NewState);
+	{error,Reason}->
+	    NewState=State#state{
+		       balcony_temp=Temp,
+		       session_time_left=0},
+	    {Reply,NewState}=format_text(NewState)
+    end,
     {reply, Reply, NewState};
 
 handle_call({websocket_handle,{text, <<"heater_balcony_off">>}},_From,State) ->
-    io:format("BUTTON : heater_balcony_on  ~p~n",[{?MODULE,?LINE}]),
-    io:format("Send a messag to balcony_pid to stop session to control heaters  ~p~n",[{?MODULE,?LINE}]),
-    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
-    NewState=State#state{
-	       balcony_temp=Temp,
-	       balcony_heather_status="OFF",
-	       session_time_left=0},
-    {Reply,NewState}=format_text(NewState),
+    io:format("heater_balcony_off  ~p~n",[{?MODULE,?LINE}]),
+    
+    case lib_lgh_web:turn_off() of
+	{ok,Result}->
+	    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
+	    NewState=State#state{
+		       balcony_temp=Temp,
+		       balcony_heather_status="OFF",
+		       session_time_left=0},
+	    {Reply,NewState}=format_text(NewState);
+	{error,Reason}->
+	    NewState=State#state{
+		       balcony_temp=Temp,
+		       session_time_left=0},
+	    {Reply,NewState}=format_text(NewState)
+    end,
     {reply, Reply, NewState};
 
 handle_call({ping}, _From, State) ->
