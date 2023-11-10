@@ -31,7 +31,7 @@
 	]).
 %% erlang Api
 -export([
-	 set_temp/1
+	
 	]).
 
 
@@ -54,17 +54,11 @@
 -define(SERVER, ?MODULE).
 
 %% Record and Data
--record(state, {
-		in_session,
-		session_time_left,
-		balcony_heather_status,
-		balcony_temp,
-		pid
-	       }).
+-include("state.hrl").
 
 %% Table or Data models
 %%
-%% Runtime:  DeploymentId,NodeName, HostName, NodeDir, Status
+%% 
 %% 
 
 
@@ -81,19 +75,6 @@ websocket_handle(Msg)->
 websocket_info(Msg)->
     gen_server:call(?SERVER, {websocket_info,Msg},infinity).
 
-
-%--------------------------------------------------------------------
-%% @doc
-%% reload(DeploymentId) will stop_unload and load and start the provider   
-%% @end
-%%--------------------------------------------------------------------
--spec set_temp(Temp :: integer()) -> ok | 
-	  {error, Error :: term()}. 
-%%  Tabels or State
-%% 
-
-set_temp(Temp) ->
-    gen_server:call(?SERVER,{set_temp,Temp},infinity).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -159,8 +140,7 @@ init([]) ->
 				  {target_tuples,TargetTuples}]),
     
  
-    {ok, #state{in_session=false,
-		session_time_left=0}}.
+    {ok, #state{}}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -180,58 +160,22 @@ init([]) ->
 
 %%% Application both setting up or sending msg to web
 
-handle_call({set_temp,Temp},_From,State) when State#state.in_session =:=true->
-    NewState=State#state{balcony_temp=integer_to_list(Temp)},
-    Reply=send_msg_to_web(NewState),
-    {reply, Reply,NewState};
-
-handle_call({set_temp,_Temp},_From,State) when State#state.in_session =:=false->
-    Reply={error,["No session is ongoing ",?MODULE,?LINE]},
-    {reply, Reply,State};
-
 %%% Websocket API
 
-handle_call({websocket_init,Pid},_From,State) ->
-    io:format("init websocket ~p~n",[{?MODULE,?LINE,Pid}]),
-    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
-  %  BalconyHeaterStatus=atom_to_list(lib_lgh_web:are_heathers_on()),
-    BalconyHeaterStatus=case lib_lgh_web:are_heathers_on() of
-			    false->
-				"OFF";
-			    true ->
-				"ON"
-			end,
-    
-    
-	    
-    {Reply,NewState}=format_text(init,State#state{
-					in_session=true,
-					balcony_heather_status=BalconyHeaterStatus,
-					balcony_temp=Temp,
-					pid=Pid}),
-    {reply, Reply,NewState};
+handle_call({websocket_init,SocketPid},_From,State) ->
+    io:format("init websocket ~p~n",[{?MODULE,?LINE,SocketPid}]),
+    {Reply,NewState}=lib_lgh_web:init_web(State,SocketPid),
+    {reply,Reply,NewState};
 
 
-handle_call({websocket_handle,{text, <<"heater_balcony_on">>}},_From,State) ->
-    io:format("BUTTON : heater_balcony_on  ~p~n",[{?MODULE,?LINE}]),
-    io:format("Send a messag to balcony_pid to start session to control heaters  ~p~n",[{?MODULE,?LINE}]),
-    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
-    NewState=State#state{
-	       balcony_temp=Temp,
-	       balcony_heather_status="ON",
-	       session_time_left=?MaxSessionTime},
-    {Reply,NewState}=format_text(NewState),
+handle_call({websocket_handle,{text, <<"start_new_session">>}},_From,State) ->
+    io:format("BUTTON : start_new_session  ~p~n",[{?MODULE,?LINE}]),
+    {Reply,NewState}=lib_lgh_web:start_new_session(State),
     {reply, Reply, NewState};
 
-handle_call({websocket_handle,{text, <<"heater_balcony_off">>}},_From,State) ->
-    io:format("BUTTON : heater_balcony_on  ~p~n",[{?MODULE,?LINE}]),
-    io:format("Send a messag to balcony_pid to stop session to control heaters  ~p~n",[{?MODULE,?LINE}]),
-    Temp=float_to_list(lib_lgh_web:get_temp(),[{decimals,1}])++" grader",
-    NewState=State#state{
-	       balcony_temp=Temp,
-	       balcony_heather_status="OFF",
-	       session_time_left=0},
-    {Reply,NewState}=format_text(NewState),
+handle_call({websocket_handle,{text, <<"stop_session">>}},_From,State) ->
+    io:format("BUTTON : stop_session  ~p~n",[{?MODULE,?LINE}]),
+    {Reply,NewState}=lib_lgh_web:stop_session(State),
     {reply, Reply, NewState};
 
 handle_call({ping}, _From, State) ->
@@ -314,35 +258,7 @@ format_status(_Opt, Status) ->
 %%%===================================================================
 %%% Internal functions
 %%%===================================================================
-%%--------------------------------------------------------------------
-%% @doc
-%% @spec
-%% @end
-%%--------------------------------------------------------------------
-send_msg_to_web(NewState)->
-    {ReplyToWeb,NewState}=format_text(NewState),
-    NewState#state.pid!ReplyToWeb,
-    ReplyToCaller=ok,
-    ReplyToCaller.
 
 
-%%--------------------------------------------------------------------
-%% @doc
-%% @spec
-%% @end
-%%--------------------------------------------------------------------
-format_text(init,State)->
-    format_text(State).
-
-
-format_text(NewState)->
-    Type=text,
-    M=io_lib,
-    F=format,
-    BalconyHeaterStatus=NewState#state.balcony_heather_status,
-    BalconyTemp=NewState#state.balcony_temp,
-
-    A=["~s~s~s", [BalconyTemp,",",BalconyHeaterStatus]],
-    {{ok,Type,M,F,A},NewState}.
 
 		  

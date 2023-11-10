@@ -3,4 +3,4 @@
 	]).
 
 %% I want following resource types
--define(TargetTypes,[zigbee_devices]). 
+-define(TargetTypes,[balcony_pid,zigbee_devices]). 

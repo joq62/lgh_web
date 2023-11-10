@@ -11,25 +11,21 @@
 
   
 
-  <h2 >Balkongen</h2>
-  <br>
-<div id="is_available"></div>
-<br><br>
-
-<button type="button" onclick="start_new_session();">Starta värmen </button>
-<button type="button" onclick="stop_session();">Stoppa värme </button>
+   <h2 >Balkongen</h2>
+<button type="button" onclick="heater_balcony_on();">Värme PÅ</button>
+<button type="button" onclick="heater_balcony_off();">Värme AV</button>
 <br> <br>
-<div id="in_session"></div>
+<div id="balcony_heather_status"></div>
 <br>
 <div id="balcony_temp">Temp</div>
 
 <h2 >Belysning</h2>
 
 <script>
-  var ws = new WebSocket("ws://localhost:60201/please_upgrade_to_websocket");
+//  var ws = new WebSocket("ws://localhost:60201/please_upgrade_to_websocket");
   
 //  var ws = new WebSocket("ws://joqhome.asuscomm.com:60201/please_upgrade_to_websocket"); 
-//  var ws = new WebSocket("ws://192.168.1.201:60201/please_upgrade_to_websocket"); 
+  var ws = new WebSocket("ws://192.168.1.201:60201/please_upgrade_to_websocket"); 
     ws.onerror = function(event) {
         console.error("[ME]WebSocket error observed:", event);
     };
@@ -43,21 +39,18 @@
       console.log(event.data);
       var str=event.data;
       var arr=str.split(",");
-
-      document.getElementById('is_available').innerHTML=arr[0];
-      document.getElementById('balcony_temp').innerHTML=arr[1];  
-      document.getElementById('in_session').innerHTML=arr[2];
-      
+      document.getElementById('balcony_temp').innerHTML=arr[0];  
+      document.getElementById('balcony_heather_status').innerHTML=arr[1];
     
   };
 
 // Joqs own golden code
 
-  function start_new_session(){
-				ws.send("start_new_session");
+  function heater_balcony_on(){
+				ws.send("heater_balcony_on");
 };
-  function stop_session(){
-				ws.send("stop_session");
+  function heater_balcony_off(){
+				ws.send("heater_balcony_off");
 };
 
    </script>
