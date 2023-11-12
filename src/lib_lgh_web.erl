@@ -45,11 +45,11 @@ init_web(State,SocketPid)->
 			  {error,Reason}->
 			      ?LOG_WARNING("Error when checking temp ",Reason),
 			      [{is_available,?Available},{balcony_temp,?ErrorTemp},
-			       {in_session,?InSession},{socket_pid,SocketPid}];
+			       {in_session,?NoSession},{socket_pid,SocketPid}];
 			  TempFloat ->
 			      Temp=float_to_list(TempFloat,[{decimals,1}])++" grader",
 			      [{is_available,?Available},{balcony_temp,Temp},
-			       {in_session,?InSession},{socket_pid,SocketPid}]
+			       {in_session,?NoSession},{socket_pid,SocketPid}]
 		      end
 	      end,
     Result=format_text(init,State#state{
@@ -84,7 +84,7 @@ start_new_session(State)->
 		{error,Reason}->
 		    Result={{error,Reason},State};
 		ok->
-		    InSession="Session ongoing",
+		    InSession=?InSession,
 		    Temp=float_to_list(TempFloat,[{decimals,1}])++" grader",
 		    Result=format_text(init,State#state{
 					      is_available=IsAvailable,
@@ -116,7 +116,7 @@ stop_session(State)->
 		{error,Reason}->
 		    Result={{error,Reason},State};
 		ok->
-		    InSession="No Session ongoing",
+		    InSession=?NoSession,
 		    Temp=float_to_list(TempFloat,[{decimals,1}])++" grader",
 		    Result=format_text(init,State#state{
 					      is_available=IsAvailable,

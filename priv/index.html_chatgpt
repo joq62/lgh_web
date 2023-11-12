@@ -34,8 +34,8 @@
     <h1>Välkommen till Leches </h1>
     <h2>Balkongen</h2>
 
-<button type="button" onclick="start_new_session();">Starta värmen </button>
-<button type="button" onclick="stop_session();">Stoppa värme </button>
+    <button id="onButton">ON</button>
+    <button id="offButton">OFF</button>
 
     <div class="info">
         <p>Availability: <span id="is_available">Not available</span></p>
@@ -49,11 +49,9 @@
       ws.onerror = function(event) {
           console.error("[ME]WebSocket error observed:", event);
       };
-      
       ws.onclose = function(event) {
           console.log("[ME]WebSocket is closed now.");
       };
-      
       ws.onmessage = function (event) {
           console.log(event.data);
 	  var str=event.data;
@@ -62,16 +60,19 @@
 	  document.getElementById('is_available').innerHTML=arr[0];
 	  document.getElementById('balcony_temp').innerHTML=arr[1];  
 	  document.getElementById('in_session').innerHTML=arr[2];
-      };
-// Joqs own golden code
+      //
+        // You can use JavaScript to update variable values and display them dynamically.
+        document.getElementById('onButton').addEventListener('click', function() {
+            document.getElementById('availability').textContent = 'Available';
+            document.getElementById('inSession').textContent = 'Yes';
+            document.getElementById('temperature').textContent = '25°C'; // Replace with the actual temperature value
+        });
 
-      function start_new_session(){
-	  ws.send("start_new_session");
-      };
-      function stop_session(){
-	  ws.send("stop_session");
-      };
-      
+        document.getElementById('offButton').addEventListener('click', function() {
+            document.getElementById('availability').textContent = 'Not available';
+            document.getElementById('inSession').textContent = 'No';
+            document.getElementById('temperature').textContent = 'N/A';
+        });
     </script>
 </body>
 </html>
