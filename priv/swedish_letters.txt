@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Swedish Letters Example</title>
+</head>
+<body>
+    <h1>Swedish Letters Example</h1>
+    <p>Special characters: å, ä, and ö</p>
+    <p>M&aring;ndag (Monday)</p>
+    <p>&Auml;pple (Apple)</p>
+    <p>&ouml;ppna (open)</p>
+</body>
+</html>

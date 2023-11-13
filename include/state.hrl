@@ -1,5 +1,5 @@
 -define(NotAvailable,"Balkongsystem ej tillgaengligt- koll att el aer paeslagen ").
--define(Available,"Balkongsystem aer tillgaengligt ").
+-define(Available,"Balkongsystem r tillgaengligt ").
 -define(NoSession,"no_session_ongoing").
 
 -define(InSession,"session_ongoing").
