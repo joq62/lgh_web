@@ -38,10 +38,9 @@
 <button type="button" onclick="stop_session();">Stoppa värme </button>
 
     <div class="info">
-        <p> <span id="is_available">Not available</span></p>
-        <p> <span id="in_session">No</span></p>
-        <p>Aktuell temperatur = <span id="balcony_temp">N/A</span></p>
-	<p>Önskad temperatur = <span id="setpoint_temp">not_implemented</span></p>
+        <p>Availability: <span id="is_available">Not available</span></p>
+        <p>In Session: <span id="in_session">No</span></p>
+        <p>Temperature: <span id="balcony_temp">N/A</span></p>
     </div>
 
     <script>

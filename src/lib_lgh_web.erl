@@ -47,7 +47,9 @@ init_web(State,SocketPid)->
 			      [{is_available,?Available},{balcony_temp,?ErrorTemp},
 			       {in_session,?NoSession},{socket_pid,SocketPid}];
 			  TempFloat ->
-			      Temp=float_to_list(TempFloat,[{decimals,1}])++" grader",
+			      TempStr=float_to_list(TempFloat,[{decimals,1}]),
+			      Temp=?TempPrint(TempStr),
+			     % Temp=float_to_list(TempFloat,[{decimals,1}])++" "++?degree++" C",
 			      [{is_available,?Available},{balcony_temp,Temp},
 			       {in_session,?NoSession},{socket_pid,SocketPid}]
 		      end
