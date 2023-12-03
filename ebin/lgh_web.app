@@ -1,0 +1,11 @@
+{application,lgh_web,
+             [{description,"An OTP application"},
+              {vsn,"0.1.0"},
+              {registered,[]},
+              {mod,{lgh_web_app,[]}},
+              {applications,[kernel,stdlib]},
+              {env,[]},
+              {modules,[lgh_web,lgh_web_app,lgh_web_handler,lgh_web_sup,
+                        lib_lgh_web,no_matching_route_handler]},
+              {licenses,["Apache-2.0"]},
+              {links,[]}]}.
